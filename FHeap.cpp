@@ -8,9 +8,11 @@ struct Nodo {
     Nodo<T>* derecha;
     Nodo<T>* izquierda;
     Nodo<T>* padre;
-    bool marcador;
-    Nodo(): data(0), derecha(nullptr), izquierda(nullptr), padre(nullptr), marcador(false){};
-    Nodo(T valor): data(valor), derecha(nullptr), izquierda(nullptr), padre(nullptr), marcador(false){};
+    Nodo<T>* hijo;
+    bool mark; // indica si perdió o no un hijo
+    int rank; // cantidad de hijos
+    Nodo(): data(0), derecha(nullptr), izquierda(nullptr), padre(nullptr), hijo(nullptr), mark(false), rank(0){};
+    Nodo(T valor): data(valor), derecha(nullptr), izquierda(nullptr), padre(nullptr), hijo(nullptr), mark(false), rank(0){};
 };
 
 template<typename T>

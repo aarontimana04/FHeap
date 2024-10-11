@@ -18,7 +18,7 @@ class FHeap{
     private:
     Nodo<T>* rootlist: // lista raiz del heap
     Nodo<T>* ptr_min; // puntero al nodo min de rootlist
-    int cont; // contador de la cantidad de hijos en el heap
+    int cont; // contador de la cantidad de nodos en el heap
     public:
     FHeap(): rootlist(nullptr), ptr_min(nullptr), cont(0){};
     // declaracion de los metodos 

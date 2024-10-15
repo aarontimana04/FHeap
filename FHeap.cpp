@@ -42,9 +42,9 @@ void FHeap<T>::insert(T valor){
     // preguntamos si el rootlist esta vacío o no
     if(rootlist == nullptr){
         // en caso lo sea, el nuevo nodo ocupada ese lugar
-        rootlist == nnodo;
+        rootlist = nnodo;
         // al igual que el puntero minimo
-        ptr_min == nnodo;
+        ptr_min = nnodo;
     } else {
         // en caso rootlist no sea vacío
         nnodo->derecha = rootlist;

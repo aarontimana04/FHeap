@@ -126,17 +126,22 @@ int FHeap<T>::size(){
 template<typename T>
 FHeap<T> FHeap<T>::Union(FHeap<T> FH2) {
     if (FH2.rootlist != nullptr) {
-        this->ptr_min =
-                this->valor_min() < FH2.valor_min() ? this->ptr_min : FH2.ptr_min; //Obtenemos el nodo con menor valor
+        if (this->rootlist == nullptr) {
+            this->rootlist = FH2.rootlist;
+            this->ptr_min = FH2.ptr_min;
+            this->cont = FH2.cont;
+        } else {
+            this->ptr_min =this->valor_min() <= FH2.valor_min() ? this->ptr_min : FH2.ptr_min; //Obtenemos el nodo con menor valor
 
-        //Empezamos con la unión de ambos rootList
-        auto temp = rootlist->izquierda;
-        this->rootlist->izquierda->derecha = FH2.rootlist;
-        this->rootlist->izquierda = FH2.rootlist->izquierda;
-        FH2.rootlist->izquierda->derecha = this->rootlist;
-        FH2.rootlist->izquierda = temp;
+            //Empezamos con la unión
+            auto temp = rootlist->izquierda;
+            this->rootlist->izquierda->derecha = FH2.rootlist;
+            this->rootlist->izquierda = FH2.rootlist->izquierda;
+            FH2.rootlist->izquierda->derecha = this->rootlist;
+            FH2.rootlist->izquierda = temp;
 
-        this->cont += FH2.cont;
+            this->cont += FH2.cont;
+        }
 
         //Eliminamos FH2
         FH2.rootlist = nullptr;

@@ -35,7 +35,7 @@ class FHeap{
     int size();
 
     FHeap Union(FHeap<T>);
-    FHeap decreaseMin();
+    FHeap extractMin();
     void print() {
         print_nodo(rootlist);
     }
@@ -153,7 +153,7 @@ FHeap<T> FHeap<T>::Union(FHeap<T> FH2) {
 
 //Función para eliminar el nodo con menor valor de un FHeap.
 template<typename T>
-FHeap<T> FHeap<T>::decreaseMin() {
+FHeap<T> FHeap<T>::extractMin() {
     if (this->rootlist != nullptr) {
         if (cont == 1) { //Si solo hay un nodo, lo eliminamos
             delete[] ptr_min;

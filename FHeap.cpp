@@ -40,6 +40,8 @@ class FHeap{
         print_nodo(rootlist);
     }
 
+    void consolidate();
+
 };
 
 template<typename T>
@@ -151,6 +153,51 @@ FHeap<T> FHeap<T>::Union(FHeap<T> FH2) {
     return *this;
 }
 
+template<typename T>
+void FHeap<T>::consolidate() {
+    // Máxima cantidad de hijos de un árbol
+    int D = static_cast<int>(std::log(this->cont) / std::log(2)) + 1;
+    auto **lista = new Nodo<T> *[D]; // Puntero de punteros a Nodo de largo log_2(n_nodos en FHeap) + 1
+    for (int i = 0; i < D; i++) {
+        *(lista + i) = nullptr;
+    }
+
+    // Recorremos toda la rootList
+    auto temp = rootlist;
+    Nodo<T> *temp2 = temp;
+    do {
+        auto temp3 = temp2->derecha; // Guarda lo que estaba originalmente a la derecha de temp2
+
+        // Mientras el rango de temp2 ya esté ocupado en la lista
+        while (*(lista + temp2->rank) != nullptr) {
+            int d = temp2->rank;   // Guardas el rank actual
+            temp2 = linking(temp2, *(lista + d));  // Unes los árboles con el mismo rango
+            *(lista + d) = nullptr;  // Limpias la entrada
+        }
+
+        *(lista + temp2->rank) = temp2;  // Asigna temp2 a su rango en lista
+        temp2 = temp3;  // Mueve temp2 a la derecha
+
+    } while (temp != temp2);  // Continúa hasta que completes el ciclo
+
+    // Creamos un nuevo heap con cada valor de la lista.
+    this->rootlist = nullptr;
+    for (int i = 0; i < D; i++) {
+        if (*(lista + i) != nullptr) {
+            if (rootlist == nullptr) {
+                rootlist = *(lista + i);
+                rootlist->izquierda = rootlist->derecha = rootlist;
+            } else {
+                (*(lista + i))->izquierda = rootlist->izquierda;
+                (*(lista + i))->derecha = rootlist;
+                rootlist->izquierda->derecha = *(lista + i);
+                rootlist->izquierda = *(lista + i);
+            }
+            if ((*(lista + i))->data < ptr_min->data) ptr_min = *(lista + i);
+        }
+    }
+}
+
 //Función para eliminar el nodo con menor valor de un FHeap.
 template<typename T>
 FHeap<T> FHeap<T>::extractMin() {
@@ -164,63 +211,32 @@ FHeap<T> FHeap<T>::extractMin() {
             return *this;
         }
 
-        if (this->ptr_min->hijo != nullptr) { //Si el nodo menor tiene hijos, se llevan todos al rootList
-            ptr_min->hijo->derecha->izquierda = rootlist;
-            ptr_min->hijo->derecha = rootlist->derecha;
-            rootlist->derecha->izquierda = ptr_min->hijo;
-            rootlist->derecha = ptr_min->hijo->derecha;
+        auto z = this->ptr_min;
+        if (z->hijo != nullptr) {
+            // Añadir los hijos del nodo mínimo a la lista raíz
+            z->hijo->derecha->izquierda = rootlist;
+            z->hijo->derecha = rootlist->derecha;
+            rootlist->derecha->izquierda = z->hijo;
+            rootlist->derecha = z->hijo->derecha;
 
-            ptr_min->hijo->padre = nullptr;
-            ptr_min->hijo = nullptr;
+            auto y = z->hijo;
+            do{
+                y->padre = nullptr;
+                y = y->derecha;
+            } while(y != z->hijo);
+            z->hijo = nullptr;
         }
 
-        //Unimos los vecinos de ptr_min para poder eliminarlo
-        auto t = ptr_min;
+        // Eliminar el nodo mínimo
         ptr_min->izquierda->derecha = ptr_min->derecha;
         ptr_min->derecha->izquierda = ptr_min->izquierda;
-        ptr_min = ptr_min->derecha; //El vecino de ptr_min ahora es el nodo con menor valor, de forma momentánea
-        delete t;
+        ptr_min = ptr_min->derecha; // Esto de forma momentánea.
+        delete z;
         this->cont--;
 
-        //Empezamos con la unión de árboles del rootList con igual rango (rank).
-        int D = static_cast<int>(std::log(this->cont) / std::log(2)) + 1; //Máxima cantidad de hijos de un árbol
-        auto **lista = new Nodo<T> *[D]; //puntero de punteros a Nodo de largo log_2(n_nodos en FHeap) + 1
-        for (int i = 0; i < D; i++) {
-            *(lista + i) = nullptr;
-        }
+        // Llamamos a la función consolidate
+        consolidate();
 
-        auto temp = rootlist;
-        Nodo<T> *temp2 = temp; //Para recorrer toda la rootList
-        do {
-            auto temp3 = temp2->derecha; //Guarda lo que estaba originalmente a la derecha de temp2
-            // Mientras el rango de temp2 ya esté ocupado en la lista
-            while (*(lista + temp2->rank) != nullptr) {
-                int d = temp2->rank;   // Guardas el rank actual
-                temp2 = linking(temp2, *(lista + d));  // Unes los árboles con el mismo rango
-                *(lista + d) = nullptr;  // Limpias la entrada
-            }
-
-            *(lista + temp2->rank) = temp2;  // Asigna temp2 a su rango en lista
-            temp2 = temp3;  // Mueve temp2 a la derecha
-
-        } while (temp != temp2);  // Continúa hasta que completes el ciclo
-
-        //Creamos un nuevo heap con cada valor de la lista.
-        this->rootlist = nullptr;
-        for (int i = 0; i < D; i++) {
-            if (*(lista + i) != nullptr) {
-                if (rootlist == nullptr) {
-                    rootlist = *(lista + i);
-                    rootlist->izquierda = rootlist->derecha = rootlist;
-                } else {
-                    (*(lista + i))->izquierda = rootlist->izquierda;
-                    (*(lista + i))->derecha = rootlist;
-                    rootlist->izquierda->derecha = *(lista + i);
-                    rootlist->izquierda = *(lista + i);
-                }
-                if ((*(lista+i))->data < ptr_min->data) ptr_min = *(lista+i);
-            }
-        }
     }
     return *this;
 }

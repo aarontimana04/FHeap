@@ -204,9 +204,7 @@ Nodo<T>* FHeap<T>::extractMin() {
     auto z = this->ptr_min;
     if (this->rootlist != nullptr) {
         if (cont == 1) { //Si solo hay un nodo, lo eliminamos
-            delete[] ptr_min;
             ptr_min = nullptr;
-            delete[] rootlist;
             rootlist = nullptr;
             cont--;
             return z;

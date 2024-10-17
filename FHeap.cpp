@@ -35,7 +35,7 @@ class FHeap{
     int size();
 
     FHeap Union(FHeap<T>);
-    FHeap extractMin();
+    Nodo<T>* extractMin();
     void print() {
         print_nodo(rootlist);
     }
@@ -200,7 +200,8 @@ void FHeap<T>::consolidate() {
 
 //Función para eliminar el nodo con menor valor de un FHeap.
 template<typename T>
-FHeap<T> FHeap<T>::extractMin() {
+Nodo<T>* FHeap<T>::extractMin() {
+    auto z = this->ptr_min;
     if (this->rootlist != nullptr) {
         if (cont == 1) { //Si solo hay un nodo, lo eliminamos
             delete[] ptr_min;
@@ -208,10 +209,9 @@ FHeap<T> FHeap<T>::extractMin() {
             delete[] rootlist;
             rootlist = nullptr;
             cont--;
-            return *this;
+            return z;
         }
 
-        auto z = this->ptr_min;
         if (z->hijo != nullptr) {
             // Añadir los hijos del nodo mínimo a la lista raíz
             z->hijo->derecha->izquierda = rootlist;
@@ -231,14 +231,13 @@ FHeap<T> FHeap<T>::extractMin() {
         ptr_min->izquierda->derecha = ptr_min->derecha;
         ptr_min->derecha->izquierda = ptr_min->izquierda;
         ptr_min = ptr_min->derecha; // Esto de forma momentánea.
-        delete z;
         this->cont--;
 
         // Llamamos a la función consolidate
         consolidate();
 
     }
-    return *this;
+    return z;
 }
 
 int main(){
